@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -27,8 +28,11 @@ class HelloController extends Controller
      */
     public function actionIndex($message = 'hello world')
     {
-        echo $message . "\n";
+        while (true) {
+            \sleep(2);
+            echo $message . "\n";
+        }
 
-        return ExitCode::OK;
+        // return ExitCode::OK;
     }
 }
