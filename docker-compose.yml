@@ -12,5 +12,5 @@ services:
     volumes:
       - ./:/micro-service-rnp
     
-    command: php /micro-service-rnp/yii hello/index  #tail -f /dev/null #php -f /usr/src/app/consumer.php   
+    command: php /micro-service-rnp/yii consumidor/run  #tail -f /dev/null #php -f /usr/src/app/consumer.php   
    
