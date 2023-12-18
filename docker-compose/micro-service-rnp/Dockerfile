@@ -20,7 +20,9 @@ RUN apt-get update && apt-get install -y vim \
     libpq-dev \
     libzip-dev \
     libc-dev \
-    htop
+    htop \
+    net-tools \
+    iputils-ping
 
 
 
