@@ -2,6 +2,7 @@
 
 namespace microServiceRnp\models\servicoDocAcademico;
 
+use Yii;
 use microServiceRnp\models\ConexaoSingleton;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
@@ -17,14 +18,17 @@ class ConsumidorDocAcademico
     }
 
 
-    public function run()
+    public function run(int $consumidor_id)
     {
+        // echo 'lopp ' . PHP_EOL;
+        // Yii::info("loop");
         while (true) {
             try {
-
+                echo 'lopp ' . PHP_EOL;
+                Yii::info("loop2222");
+                1 / 0;
                 $channel = $this->conexao->channel();
                 $channel->queue_declare(self::FILA, false, true, false, false);
-                echo " [*] Waiting for messages. To exit press CTRL+C\n";
 
                 $callback = function ($msg) {
                     $this->executaJob($msg);
@@ -33,11 +37,14 @@ class ConsumidorDocAcademico
                 $channel->basic_qos(null, 1, false);
                 $channel->basic_consume(self::FILA, '', false, false, false, false, $callback);
                 while ($channel->is_consuming()) {
+                    echo 'lopp channel ' . PHP_EOL;
                     $channel->wait();
                 }
-            } catch (\Throwable $exception) {
-                echo $exception->getMessage() . PHP_EOL;
                 sleep(1);
+            } catch (\Throwable $exception) {
+                Yii::info("loop2222");
+                echo $exception->getMessage() . PHP_EOL;
+                sleep(5);
             }
         }
     }

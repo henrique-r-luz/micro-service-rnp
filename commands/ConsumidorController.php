@@ -29,9 +29,10 @@ class ConsumidorController extends Controller
      * @return void
      * @author Henrique Luz
      */
-    public function actionRun()
+    public function actionRun(int $consumidor_id)
     {
+        
         $consumidorDocAcademico = new ConsumidorDocAcademico();
-        $consumidorDocAcademico->run();
+        $consumidorDocAcademico->run($consumidor_id);
     }
 }

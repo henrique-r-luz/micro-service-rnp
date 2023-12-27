@@ -14,12 +14,12 @@ class GerenciaConsumidorController extends Controller
     {
 
         for ($i = 0; $i < $totalProcesso; $i++) {
-            $this->abriProcessos();
+            $this->abriProcessos($i);
         }
     }
-    private function abriProcessos()
+    private function abriProcessos(int $consumidor_id)
     {
-        $consoleCommand = Yii::$app->basePath . '/yii   consumidor/run';
+        $consoleCommand = Yii::$app->basePath . '/yii   consumidor/run ' . $consumidor_id;
         $backgroundCommand = Console::isRunningOnWindows() ? 'start /B ' : 'nohup ';
         $command = $backgroundCommand . ' php ' .  $consoleCommand . ' > ' . '/dev/null 2>&1 &';
         exec($command);
