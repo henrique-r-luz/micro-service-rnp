@@ -49,4 +49,14 @@ class ItensDiploma extends ActiveRecord
     {
         return 'graduacao.itens_diploma';
     }
+
+    public function rules(): array
+    {
+        return [
+            [['tipo_diploma_id_rnp', 'diploma_digital_id', 'data'], 'required'],
+            [['tipo_diploma_id_rnp', 'status'], 'string'],
+            [['livro_registro_id', 'dados_doc'], 'safe'],
+            [['diploma_digital_id', 'created_at', 'updated_at', 'updated_by', 'created_by', 'doc_rnp_id'], 'integer'],
+        ];
+    }
 }

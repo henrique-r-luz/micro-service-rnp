@@ -20,6 +20,7 @@ $config = [
             'class' => 'yii\caching\FileCache',
         ],
         'rabbitmq' => require(__DIR__ . '/rabbitmq.php'),
+        'rnp' => require(__DIR__ . '/rnp.php'),
         'log' => [
             'targets' => [
                 [

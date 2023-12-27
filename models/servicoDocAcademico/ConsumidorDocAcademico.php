@@ -2,7 +2,11 @@
 
 namespace microServiceRnp\models\servicoDocAcademico;
 
-use Yii;
+use microServiceRnp\lib\helper\CajuiException;
+use microServiceRnp\models\CallRnp;
+use microServiceRnp\models\TipoDiploma;
+use microServiceRnp\models\ItensDiploma;
+use microServiceRnp\models\StatusDocumento;
 use microServiceRnp\models\ConexaoSingleton;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
@@ -20,30 +24,26 @@ class ConsumidorDocAcademico
 
     public function run(int $consumidor_id)
     {
-        // echo 'lopp ' . PHP_EOL;
-        // Yii::info("loop");
         while (true) {
             try {
-                echo 'lopp ' . PHP_EOL;
-                Yii::info("loop2222");
-                1 / 0;
                 $channel = $this->conexao->channel();
                 $channel->queue_declare(self::FILA, false, true, false, false);
 
                 $callback = function ($msg) {
+
                     $this->executaJob($msg);
                 };
 
                 $channel->basic_qos(null, 1, false);
                 $channel->basic_consume(self::FILA, '', false, false, false, false, $callback);
                 while ($channel->is_consuming()) {
-                    echo 'lopp channel ' . PHP_EOL;
                     $channel->wait();
                 }
-                sleep(1);
-            } catch (\Throwable $exception) {
-                Yii::info("loop2222");
-                echo $exception->getMessage() . PHP_EOL;
+            } catch (\Throwable $e) {
+                echo $e->getMessage() . PHP_EOL;
+                sleep(5);
+            } catch (CajuiException $e) {
+                echo $e->getMessage() . PHP_EOL;
                 sleep(5);
             }
         }
@@ -52,7 +52,47 @@ class ConsumidorDocAcademico
 
     private function executaJob($msg)
     {
-        echo ' [x] Received Mensagem de ', $msg->getBody();
-        $msg->ack();
+        try {
+            echo 'vai' . \PHP_EOL;
+            //$msg->ack();
+
+            $json = $msg->getBody();
+            $array_json = \json_decode($json, true);
+            $diplomaDigital_id = $array_json['meta']['groupId'];
+            $itensDiploma = ItensDiploma::find()->where(['diploma_digital_id' => $diplomaDigital_id])
+                ->andWhere(['tipo_diploma_id_rnp' => TipoDiploma::ACADEMICO])
+                ->one();
+
+            if (empty($itensDiploma)) {
+                //lança erro
+                echo 'emptyyyy' . \PHP_EOL;
+            }
+            //inicia processamento do documento 
+            $itensDiploma->status = StatusDocumento::PROCESSANDO;
+
+            if (!$itensDiploma->update(false)) {
+                //lança erro
+
+            }
+            //envia json para rnp
+            $param = [
+                'itensDiploma' => $itensDiploma,
+                'arquivo' => $json,
+            ];
+            $documentId = CallRnp::createDocRNP($param);
+            $itensDiploma->doc_rnp_id = $documentId;
+            $itensDiploma->status = StatusDocumento::STATUS_RNP;
+            /* $itensDiploma->dados_doc = $fotoDadosDiploma;
+        $itensDiploma->data = $fotoDadosDiploma['pessoal_curso']['pessoal'][LabelDadosQuery::data_emissao_historico]
+            . ' ' . $fotoDadosDiploma['pessoal_curso']['pessoal'][LabelDadosQuery::hora_emissao_historico];*/
+
+            if (!$itensDiploma->update(false)) {
+                // lança erro
+            }
+        } catch (\Throwable $e) {
+            echo $e->getMessage() . PHP_EOL;
+        } finally {
+            $msg->ack();
+        }
     }
 }
