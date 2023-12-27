@@ -1,6 +1,6 @@
 <?php
 
-namespace app\models;
+namespace microServiceRnp\models;
 
 use Yii;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -25,6 +25,7 @@ class ConexaoSingleton
 
     public  function conexaoRabbitmq()
     {
+
         return new AMQPStreamConnection(
             Yii::$app->rabbitmq->host,
             Yii::$app->rabbitmq->porta,

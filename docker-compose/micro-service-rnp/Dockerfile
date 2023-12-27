@@ -44,7 +44,7 @@ RUN mkdir -p /home/$user/.composer && \
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Instalando Extensões PHP
-RUN docker-php-ext-install curl intl mbstring pdo_pgsql xml zip
+RUN docker-php-ext-install curl intl mbstring pdo_pgsql xml zip sockets
 
 # Habilita threds no php
 RUN pecl install parallel \

@@ -1,6 +1,6 @@
 <?php
 
-use app\lib\componentes\RabbitMqConfig;
+use microServiceRnp\lib\componentes\RabbitMqConfig;
 
 
 

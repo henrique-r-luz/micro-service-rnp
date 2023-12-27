@@ -80,10 +80,10 @@
     ],
     "autoload": {
         "psr-4": {
-            "app\\models\\": "models/",
-            "app\\commands\\": "commands/",
-            "app\\tests\\": "tests/",
-            "app\\lib\\": "lib/"
+            "microServiceRnp\\models\\": "models/",
+            "microServiceRnp\\commands\\": "commands/",
+            "microServiceRnp\\tests\\": "tests/",
+            "microServiceRnp\\lib\\": "lib/"
         }
     }
 }

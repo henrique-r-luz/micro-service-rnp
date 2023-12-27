@@ -8,11 +8,12 @@ $config = [
     'name' => 'MicroServiceRnp',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
-    'controllerNamespace' => 'app\commands',
+    'controllerNamespace' => 'microServiceRnp\commands',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
         '@tests' => '@app/tests',
+        '@microServiceRnp' =>  "/microServiceRnp"
     ],
     'components' => [
         'cache' => [

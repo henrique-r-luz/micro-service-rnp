@@ -1,6 +1,6 @@
 <?php
 
-namespace app\lib\componentes;
+namespace microServiceRnp\lib\componentes;
 
 use yii\base\Component;
 
