@@ -8,7 +8,11 @@
 
 namespace app\commands;
 
+
+use parallel\Runtime;
 use yii\console\Controller;
+use app\models\servicoDocAcademico\ConsumidorDocAcademico;
+
 
 
 /**
@@ -25,12 +29,45 @@ class ConsumidorController extends Controller
      * @return void
      * @author Henrique Luz
      */
-    public function actionRun($message = 'hello world')
+    public function actionRun()
     {
-        while (true) {
+        /*while (true) {
             \sleep(2);
             echo $message . "\n";
-        }
+        }*/
+
+        //$consumidorDocAcademico->run();
+
+        $consumidorDocAcademico = new ConsumidorDocAcademico();
+
+        $consumidor1 =  new Runtime();
+        $consumidor1->run(function () use ($consumidorDocAcademico) {
+            echo "porcesso 1" . \PHP_EOL;
+            ConsumidorDocAcademico::run();
+            //$consumidorDocAcademico = new ConsumidorDocAcademico();
+            //$consumidorDocAcademico->run();
+        }, []);
+
+
+        $consumidor2 =  new Runtime();
+        $consumidor2->run(function () use ($consumidorDocAcademico) {
+            echo "porcesso 2" . \PHP_EOL;
+            ConsumidorDocAcademico::run();
+            //$consumidorDocAcademico = new ConsumidorDocAcademico();
+            //$consumidorDocAcademico->run();
+        }, []);
+
+
+        $consumidor3 =  new Runtime();
+        $consumidor3->run(function () use ($consumidorDocAcademico) {
+            echo "porcesso 3" . \PHP_EOL;
+            //$consumidorDocAcademico = new ConsumidorDocAcademico();
+            ConsumidorDocAcademico::run();
+        }, []);
+
+
+
+        echo " [*] Principal \n";
 
         // return ExitCode::OK;
     }
