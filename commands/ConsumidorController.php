@@ -12,8 +12,7 @@ namespace microServiceRnp\commands;
 
 use yii\console\Controller;
 use microServiceRnp\models\servicoDocAcademico\ConsumidorDocAcademico;
-
-
+use Throwable;
 
 /**
  * Undocumented class
@@ -31,8 +30,14 @@ class ConsumidorController extends Controller
      */
     public function actionRun(int $consumidor_id)
     {
-        
-        $consumidorDocAcademico = new ConsumidorDocAcademico();
-        $consumidorDocAcademico->run($consumidor_id);
+        while (true) {
+            try {
+                $consumidorDocAcademico = new ConsumidorDocAcademico();
+                $consumidorDocAcademico->run($consumidor_id);
+            } catch (Throwable $e) {
+                sleep(5);
+                echo $e->getMessage();
+            }
+        }
     }
 }
