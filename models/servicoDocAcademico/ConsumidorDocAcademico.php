@@ -2,12 +2,14 @@
 
 namespace microServiceRnp\models\servicoDocAcademico;
 
-use microServiceRnp\lib\helper\CajuiException;
+use Yii;
 use microServiceRnp\models\CallRnp;
 use microServiceRnp\models\TipoDiploma;
 use microServiceRnp\models\ItensDiploma;
+use microServiceRnp\lib\helper\CajuiHelper;
 use microServiceRnp\models\StatusDocumento;
 use microServiceRnp\models\ConexaoSingleton;
+use microServiceRnp\lib\helper\CajuiException;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
 
@@ -24,8 +26,6 @@ class ConsumidorDocAcademico
 
     public function run(int $consumidor_id)
     {
-        //  while (true) {
-
         try {
             $channel = $this->conexao->channel();
             $channel->queue_declare(self::FILA, false, true, false, false);
@@ -44,7 +44,6 @@ class ConsumidorDocAcademico
             echo $e->getMessage() . PHP_EOL;
             sleep(5);
         }
-        // }
     }
 
 
@@ -70,7 +69,7 @@ class ConsumidorDocAcademico
                 //lança erro
 
             }
-            $this->enviaDocRnp($itensDiploma, $json);
+            $this->enviaDocRnp($itensDiploma, $array_json);
         } catch (\Throwable $e) {
             echo $e->getMessage() . PHP_EOL;
         } finally {
@@ -79,8 +78,9 @@ class ConsumidorDocAcademico
     }
 
 
-    private function enviaDocRnp($itensDiploma, $json)
+    private function enviaDocRnp($itensDiploma, $array_json)
     {
+        $json =  $this->geraPdfA($array_json);
         //envia json para rnp
         $param = [
             'itensDiploma' => $itensDiploma,
@@ -96,5 +96,31 @@ class ConsumidorDocAcademico
         if (!$itensDiploma->update(false)) {
             // lança erro
         }
+    }
+
+
+    private function geraPdfA($array_json)
+    {
+        // echo '<pre>';
+        // print_r($array_json['data']['RegistroReq']['DocumentacaoComprobatoria']);
+        $array_aux = $array_json;
+        foreach ($array_json['data']['RegistroReq']['DocumentacaoComprobatoria'] as $id => $doc) {
+            if (isset($doc['Documento']['Arquivo']) && (empty($doc['Documento']['Arquivo']) || $doc['Documento']['Arquivo'] == '')) {
+                continue;
+            }
+            $documento = base64_decode($doc['Documento']['Arquivo']);
+            $nomeArquivo = "doc" . $array_json['meta']['yourNumber'] . '_' . $id;
+            $pdfJson = fopen(Yii::getAlias('@tmp') . '/' . $nomeArquivo . ".pdf", "w");
+            fwrite($pdfJson, $documento);
+            fclose($pdfJson);
+            // $fileRVDDPdf = Yii::getAlias('@tmp') . '/' . $baseUrl . '.pdf';
+            CajuiHelper::convertToPdfA(
+                Yii::getAlias('@tmp') . '/' . $nomeArquivo . ".pdf",
+                Yii::getAlias('@tmp') . '/' . $nomeArquivo . "_pdfa_" . ".pdf"
+            );
+            $documentoPdfA = \base64_encode(file_get_contents(Yii::getAlias('@tmp') . '/' . $nomeArquivo . "_pdfa_" . ".pdf"));
+            $array_aux['data']['RegistroReq']['DocumentacaoComprobatoria'][$id]['Documento']['Arquivo'] = $documentoPdfA;
+        }
+        return json_encode($array_aux, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 }

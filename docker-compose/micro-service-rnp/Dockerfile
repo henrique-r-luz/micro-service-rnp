@@ -22,7 +22,8 @@ RUN apt-get update && apt-get install -y vim \
     libc-dev \
     htop \
     net-tools \
-    iputils-ping
+    iputils-ping \
+    ghostscript
 
 
 
@@ -46,11 +47,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 # Instalando Extensões PHP
 RUN docker-php-ext-install curl intl mbstring pdo_pgsql xml zip sockets
 
-# Habilita threds no php
-RUN pecl install parallel \
-    && docker-php-ext-enable parallel
 
-#ENTRYPOINT ["/usr/local/bin/php /micro-service-rnp/yii hello/index"]
 USER $user
 
 
