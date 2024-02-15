@@ -90,22 +90,16 @@ class ConsumidorDocAcademico
         $documentId = CallRnp::createDocRNP($param);
         $itensDiploma->doc_rnp_id = $documentId;
         $itensDiploma->status = StatusDocumento::STATUS_RNP;
-        /* $itensDiploma->dados_doc = $fotoDadosDiploma;
-    $itensDiploma->data = $fotoDadosDiploma['pessoal_curso']['pessoal'][LabelDadosQuery::data_emissao_historico]
-        . ' ' . $fotoDadosDiploma['pessoal_curso']['pessoal'][LabelDadosQuery::hora_emissao_historico];*/
 
         if (!$itensDiploma->update(false)) {
             // lança erro
         }
-
-        sleep(10);
     }
 
 
     private function geraPdfA($array_json)
     {
-        // echo '<pre>';
-        // print_r($array_json['data']['RegistroReq']['DocumentacaoComprobatoria']);
+
         $array_aux = $array_json;
         foreach ($array_json['data']['RegistroReq']['DocumentacaoComprobatoria'] as $id => $doc) {
             if (isset($doc['Documento']['Arquivo']) && (empty($doc['Documento']['Arquivo']) || $doc['Documento']['Arquivo'] == '')) {
@@ -116,7 +110,7 @@ class ConsumidorDocAcademico
             $pdfJson = fopen(Yii::getAlias('@tmp') . '/' . $nomeArquivo . ".pdf", "w");
             fwrite($pdfJson, $documento);
             fclose($pdfJson);
-            // $fileRVDDPdf = Yii::getAlias('@tmp') . '/' . $baseUrl . '.pdf';
+
             CajuiHelper::convertToPdfA(
                 Yii::getAlias('@tmp') . '/' . $nomeArquivo . ".pdf",
                 Yii::getAlias('@tmp') . '/' . $nomeArquivo . "_pdfa_" . ".pdf"
