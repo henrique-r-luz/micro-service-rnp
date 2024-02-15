@@ -41,8 +41,8 @@ class ConsumidorDocAcademico
             echo $e->getMessage() . PHP_EOL;
             sleep(5);
         } catch (CajuiException $e) {
-            echo $e->getMessage() . PHP_EOL;
-            sleep(5);
+            /* echo $e->getMessage() . PHP_EOL;
+            sleep(5);*/
         }
     }
 
@@ -50,6 +50,7 @@ class ConsumidorDocAcademico
     private function executaJob($msg)
     {
         try {
+
             echo 'inicia' . \PHP_EOL;
             //$msg->ack();
             $json = $msg->getBody();
@@ -96,6 +97,8 @@ class ConsumidorDocAcademico
         if (!$itensDiploma->update(false)) {
             // lança erro
         }
+
+        sleep(10);
     }
 
 
@@ -120,7 +123,12 @@ class ConsumidorDocAcademico
             );
             $documentoPdfA = \base64_encode(file_get_contents(Yii::getAlias('@tmp') . '/' . $nomeArquivo . "_pdfa_" . ".pdf"));
             $array_aux['data']['RegistroReq']['DocumentacaoComprobatoria'][$id]['Documento']['Arquivo'] = $documentoPdfA;
+            //remove pdfs
+            unlink(Yii::getAlias('@tmp') . '/' . $nomeArquivo . ".pdf");
+            unlink(Yii::getAlias('@tmp') . '/' . $nomeArquivo . "_pdfa_" . ".pdf");
         }
+
+
         return json_encode($array_aux, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 }
