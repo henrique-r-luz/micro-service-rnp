@@ -35,8 +35,11 @@ class ConsumidorController extends Controller
                 $consumidorDocAcademico = new ConsumidorDocAcademico();
                 $consumidorDocAcademico->run($consumidor_id);
             } catch (Throwable $e) {
-                sleep(5);
                 echo $e->getMessage();
+
+                sleep(5);
+            } finally {
+                unset($consumidorDocAcademico);
             }
         }
     }
